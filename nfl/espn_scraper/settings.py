@@ -1,21 +1,13 @@
+import os
 
 SPIDER_MODULES = ['espn_scraper.spiders']
 
-# DATABASE = {
-#     'drivername': 'postgres',
-#     'host': 'localhost',
-#     'port': '5432',
-#     'username': 'arosenberg',
-#     'database': 'nfl_test_2'
-# }
-
 DATABASE = {
-    'drivername': 'postgres',
-    'host': 'ec2-54-163-228-109.compute-1.amazonaws.com',
-    'port': '5432',
-    'username': 'npapimuvhzikjb',
-    'password': 'vdt-V65Njuzh1pr3d92byTAnFz',
-    'database': 'dak2n8qnpioi1g'
+    'drivername': os.environ['DB_DRIVER'],
+    'host': os.environ['DB_HOST'],
+    'port': os.environ['DB_PORT'],
+    'username': os.environ['DB_USER'],
+    'database': os.environ['DB_NAME'],
 }
 
 ITEM_PIPELINES = {
