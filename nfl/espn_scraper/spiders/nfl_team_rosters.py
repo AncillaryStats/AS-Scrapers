@@ -48,14 +48,12 @@ class EspnSpider(Spider):
 
     def get_player_info(self, response):
         loader = ItemLoader(item=NFL_Player_2015(), response=response)
-
         loader.default_input_processor = MapCompose(unicode.strip)
         loader.default_output_processor = Join()
 
         number_and_position = response.xpath('//*[@id="content"]/div[3]/div[2]/div[3]/ul[1]/li[1]/text()').extract()[0]
-
-
         number_and_position = response.xpath('//*[@id="content"]/div[3]/div[2]/div[3]/ul[1]/li[1]/text()').extract()
+
         if type(number_and_position) is list:
             number_and_position = number_and_position[0]
             number = number_and_position.split()[0]

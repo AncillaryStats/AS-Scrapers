@@ -28,10 +28,7 @@ class EspnSpider(Spider):
 
     # Follows all links for individual QBs, WRs, TEs, RBs, and FBs on team depth chart
     def parse_depth_chart(self, response):
-
-
         loader = ItemLoader(item=NFL_Team_2015(), response=response)
-
         loader.default_input_processor = MapCompose(unicode.strip)
         loader.default_output_processor = Join()
 

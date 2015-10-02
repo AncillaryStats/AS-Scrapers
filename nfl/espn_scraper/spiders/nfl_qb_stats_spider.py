@@ -85,11 +85,10 @@ class EspnSpider(Spider):
 
         # Load game stat rows into scrapy items
         for game_row in games_table:
-            # print(game_row)
+            print(game_row)
 
             loader = ItemLoader(item=NFL_QB_Game_2015(), response=response)
             loader.default_output_processor = TakeFirst()
-
             loader.add_xpath('player_name', '//*[@id="content"]/div[3]/div[2]/h1/text()', MapCompose(unicode.strip))
 
             # Handle regular season totals row

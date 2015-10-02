@@ -90,7 +90,6 @@ class EspnSpider(Spider):
 
             loader = ItemLoader(item=NFL_RB_Game_2015(), response=response)
             loader.default_output_processor = TakeFirst()
-
             loader.add_xpath('player_name', '//*[@id="content"]/div[3]/div[2]/h1/text()', MapCompose(unicode.strip))
 
             # Handle regular season totals row
