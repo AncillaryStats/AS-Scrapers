@@ -2,6 +2,59 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 from models import NFL_Team_2015, NFL_Player_2015, NFL_QB_Game_2015, NFL_RB_Game_2015, NFL_WR_Game_2015, NFL_TE_Game_2015, db_connect, create_tables
 
+
+def upsert_season_total(model, scrapy_item, row, s):
+    """Insert or update player's season totals
+    Args:
+        model: model for position being queried
+        scrapy_item: loaded scrapy item scraped from row
+        row: unpacked vars from scrapy item applied to model
+        s: open session
+    """
+    print('\n----------\nupserting season total\n----------\n')
+    if s.query(model).filter(model.player_name == scrapy_item['player_name'], model.is_season_totals == True).count() > 0:
+
+        # update season totals
+        to_be_del = s.query(model).filter(model.player_name == scrapy_item['player_name'], model.is_season_totals == True).one()
+
+        print('\n----------\nto be deleted:\n----------\n')
+
+        print (to_be_del)
+
+        try:
+            s.delete(to_be_del)
+            s.add(row)
+            s.commit()
+        except:
+            s.rollback()
+            print('---------\nerror updating row\n---------')
+        finally:
+            s.close()
+    else:
+        print('---------\nsaving new season totals\n---------')
+        try:
+            s.add(row)
+            s.commit()
+        except:
+            s.rollback()
+            print('---------\nerror inserting row\n---------')
+        finally:
+            s.close()
+
+
+def insert_new_row(row, s):
+    """Add team if it does not exist yet"""
+    print('\n----------\ninserting new game\n----------\n')
+    try:
+        s.add(row)
+        s.commit()
+    except:
+        s.rollback()
+        print('error saving item!')
+        raise
+    finally:
+        s.close()
+
 # Pipeline from processing nfl teams from 'nfl_team_info' spider
 class NFL_Team_Info_2015_Pipeline(object):
     def __init__(self):
@@ -23,20 +76,8 @@ class NFL_Team_Info_2015_Pipeline(object):
             team = NFL_Team_2015(**item)
 
             # Add team if it does not exist yet
-            if not session.query(NFL_Team_2015).filter(NFL_Team_2015.name == item['name']).count():
-                print('new team found!')
-                try:
-                    session.add(team)
-                    session.commit()
-                except:
-                    session.rollback()
-                    print('error saving item!')
-                    raise
-                finally:
-                    session.close()
-            else:
-                print('team already exists')
-                session.close()
+            if session.query(NFL_Team_2015).filter(NFL_Team_2015.name == item['name']).count() > 0:
+                insert_new_row(team, session)
 
         # pass item to next pipeline
         return item
@@ -63,20 +104,10 @@ class NFL_Player_2015_Pipeline(object):
             player = NFL_Player_2015(**item)
 
             # Add team if it does not exist yet
-            if not session.query(NFL_Player_2015).filter(NFL_Player_2015.name == item['name']).count():
-                print('new player found!')
-                try:
-                    session.add(player)
-                    session.commit()
-                except:
-                    session.rollback()
-                    print('error saving item!')
-                    raise
-                finally:
-                    session.close()
+            if session.query(NFL_Player_2015).filter(NFL_Player_2015.name == item['name']).count() > 0:
+                insert_new_row(player, session)
             else:
                 print('player already exists')
-                session.close()
 
         # pass item to next pipeline
         return item
@@ -98,27 +129,17 @@ class NFL_QB_Stats_2015_Pipeline(object):
 
         # Only process items for the nfl team info spider
         if spider.name == 'nfl_qb_stats':
-            # print(item)
             session = self.Session()
             game = NFL_QB_Game_2015(**item)
 
+            # If season totals, delete old row and insert new row
+            if item['is_season_totals'] == True:
+                upsert_season_total(NFL_QB_Game_2015, item, game, session)
             # Add game if it hasn't been added yet
-            # if not session.query(NFL_QB_Game_2015).filter(NFL_QB_Game_2015.date == item['date'], NFL_QB_Game_2015.player_name == item['player_name']).count():
-            if True:
-
-                print('new game found!')
-                try:
-                    session.add(game)
-                    session.commit()
-                except:
-                    session.rollback()
-                    print('error saving item!')
-                    raise
-                finally:
-                    session.close()
+            elif session.query(NFL_QB_Game_2015).filter(NFL_QB_Game_2015.date == item['date'], NFL_QB_Game_2015.player_name == item['player_name']).count() == 0:
+                insert_new_row(game, session)
             else:
-                print('game already exists')
-                session.close()
+                print('\n----------\nqb season game already exists\n----------\n')
 
         # pass item to next pipeline
         return item
@@ -146,22 +167,14 @@ class NFL_RB_Stats_2015_Pipeline(object):
             session = self.Session()
             game = NFL_RB_Game_2015(**item)
 
+            # If season totals, delete old row and insert new row
+            if item['is_season_totals'] == True:
+                upsert_season_total(NFL_RB_Game_2015, item, game, session)
             # Add game if it hasn't been added yet
-            # if not session.query(NFL_RB_Game_2015).filter(NFL_RB_Game_2015.date == item['date'], NFL_RB_Game_2015.player_name == item['player_name']).count():
-            if True:
-                print('new game found!')
-                try:
-                    session.add(game)
-                    session.commit()
-                except:
-                    session.rollback()
-                    print('error saving item!')
-                    raise
-                finally:
-                    session.close()
+            elif session.query(NFL_RB_Game_2015).filter(NFL_RB_Game_2015.date == item['date'], NFL_RB_Game_2015.player_name == item['player_name']).count() == 0:
+                insert_new_row(game, session)
             else:
-                print('game already exists')
-                session.close()
+                print('\n----------\nrb game already exists\n----------\n')
 
         # pass item to next pipeline
         return item
@@ -187,22 +200,15 @@ class NFL_WR_Stats_2015_Pipeline(object):
             session = self.Session()
             game = NFL_WR_Game_2015(**item)
 
+            # If season totals, delete old row and insert new row
+            if item['is_season_totals'] == True:
+                upsert_season_total(NFL_WR_Game_2015, item, game, session)
+
             # Add game if it hasn't been added yet
-            # if not session.query(NFL_WR_Game_2015).filter(NFL_WR_Game_2015.date == item['date'], NFL_WR_Game_2015.player_name == item['player_name']).count():
-            if True:
-                print('new game found!')
-                try:
-                    session.add(game)
-                    session.commit()
-                except:
-                    session.rollback()
-                    print('error saving item!')
-                    raise
-                finally:
-                    session.close()
+            elif session.query(NFL_WR_Game_2015).filter(NFL_WR_Game_2015.date == item['date'], NFL_WR_Game_2015.player_name == item['player_name']).count() == 0:
+                insert_new_row(game, session)
             else:
-                print('game already exists')
-                session.close()
+                print('\n----------\nwr game already exists\n----------\n')
 
         return item
 
@@ -228,20 +234,14 @@ class NFL_TE_Stats_2015_Pipeline(object):
             session = self.Session()
             game = NFL_TE_Game_2015(**item)
 
+            # If season totals, delete old row and insert new row
+            if item['is_season_totals'] == True:
+                upsert_season_total(NFL_TE_Game_2015, item, game, session)
+
             # Add game if it hasn't been added yet
-            # if not session.query(NFL_TE_Game_2015).filter(NFL_TE_Game_2015.date == item['date'], NFL_TE_Game_2015.player_name == item['player_name']).count():
-            if True:
-                print('new game found!')
-                try:
-                    session.add(game)
-                    session.commit()
-                except:
-                    session.rollback()
-                    print('error saving item!')
-                    raise
-                finally:
-                    session.close()
+            elif session.query(NFL_TE_Game_2015).filter(NFL_TE_Game_2015.date == item['date'], NFL_TE_Game_2015.player_name == item['player_name']).count() == 0:
+                insert_new_row(game, session)
             else:
-                print('game already exists')
+                print('\n----------\nwr game already exists\n----------\n')
 
         return item
