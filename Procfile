@@ -1,0 +1,1 @@
+worker: sh -c 'cd ./nfl/ && scrapy crawl nfl_qb_stats'
