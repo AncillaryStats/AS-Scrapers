@@ -9,7 +9,7 @@ import datetime
 
 from espn_scraper.items import NFL_QB_Game_2015
 
-class EspnSpider(Spider):
+class QbSpider(Spider):
     name = 'nfl_qb_stats'
     allowed_domains = ['espn.com', 'espn.go.com']
     start_urls = ['http://espn.go.com/nfl/teams']

@@ -7,7 +7,7 @@ from scrapy.http import Request
 
 from espn_scraper.items import NFL_Player_2015
 
-class EspnSpider(Spider):
+class PlayerSpider(Spider):
     name = 'nfl_players'
     allowed_domains = ['espn.com', 'espn.go.com']
     start_urls = ['http://espn.go.com/nfl/teams']
