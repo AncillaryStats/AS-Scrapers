@@ -2,6 +2,11 @@ import datetime
 import os
 
 def crawl_spider(spider_name):
+    """Crawls single spider and writes metadata to logs
+
+    Writes to 'espn_scraper/track_crawlers.txt' before starting crawl
+    """
+
     f = open('track_crawlers', 'a')
     f.write('crawling spider %s @ %s\n' % (spider_name, datetime.datetime.now()))
     f.close()

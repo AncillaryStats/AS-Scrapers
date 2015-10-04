@@ -1,17 +1,18 @@
 import redis
 import run
 import os
+import time
+from queue import RedisQueue
 
 redis_url = os.getenv('REDISTOGO_URL')
-
-r = redis.StrictRedis.from_url(redis_url)
-channel = r.pubsub()
-channel.subscribe('scrapers')
+# r = redis.Redis.from_url(redis_url)
+scraper_q = RedisQueue('scrapers', redis_url)
 
 while True:
-    message = channel.get_message()
-    if message:
-        print message['data']
-        if message['data'] == 'CRAWL ALL SPIDERS':
-            run.crawl_all()
-            print 'DONE CRAWLING'
+    print 'checking work queue'
+    message = scraper_q.dequeue()
+    print message
+    if message[1] == 'CRAWL ALL SPIDERS':
+        run.crawl_all()
+        print 'DONE CRAWLING'
+    time.sleep(2)
