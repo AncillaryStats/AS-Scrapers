@@ -16,7 +16,7 @@ def crawl_all():
     """Runs all listed scrapy spiders"""
     cwd = os.path.dirname(os.path.realpath(__file__))
     print 'current dir %s' % cwd
-    os.chdir(cwd + '/nfl/espn_scraper/')
+    os.chdir(cwd + '/nfl/')
     new_dir = os.path.dirname(os.path.realpath(__file__))
     print 'new dir %s '% new_dir
 
@@ -33,6 +33,6 @@ def print_dirs():
     """Test directory changing"""
     cwd = os.path.dirname(os.path.realpath(__file__))
     print 'current dir %s' % cwd
-    os.chdir(cwd + '/nfl/espn_scraper/')
+    os.chdir(cwd + '/nfl/')
     new_dir = os.path.dirname(os.path.realpath(__file__))
     print 'new dir %s '% new_dir

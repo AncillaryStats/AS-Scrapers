@@ -7,6 +7,7 @@ DATABASE = {
     'host': os.environ['DB_HOST'],
     'port': os.environ['DB_PORT'],
     'username': os.environ['DB_USER'],
+    'password': os.environ['DB_PW']
     'database': os.environ['DB_NAME'],
 }
 
