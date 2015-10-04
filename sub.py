@@ -5,8 +5,9 @@ import time
 from queue import RedisQueue
 
 redis_url = os.getenv('REDISTOGO_URL')
-# r = redis.Redis.from_url(redis_url)
 scraper_q = RedisQueue('scrapers', redis_url)
+
+# Listens for message 'CRAWL ALL SPIDERS' on Redis queue at key 'scrapers'
 
 while True:
     print 'checking work queue'
