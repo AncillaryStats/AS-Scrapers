@@ -15,10 +15,10 @@ def crawl_spider(spider_name):
 def crawl_all():
     """Runs all listed scrapy spiders"""
     cwd = os.path.dirname(os.path.realpath(__file__))
-    print cwd
+    print 'current dir %s' % cwd
     os.chdir(cwd + '/nfl/espn_scraper/')
     new_dir = os.path.dirname(os.path.realpath(__file__))
-    print new_dir
+    print 'new dir %s '% new_dir
 
     spiders = ['nfl_players', 'nfl_qb_stats', 'nfl_rb_stats', 'nfl_wr_stats', 'nfl_te_stats', 'nfl_team_info']
 
@@ -26,5 +26,13 @@ def crawl_all():
        crawl_spider(spider)
 
     f = open('track_crawlers.txt', 'a')
-    f.write('DONE CRAWLING @ %s\n', datetime.datetime.now())
+    f.write('DONE CRAWLING @ %s\n' % datetime.datetime.now())
     f.close()
+
+def print_dirs():
+    """Test directory changing"""
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    print 'current dir %s' % cwd
+    os.chdir(cwd + '/nfl/espn_scraper/')
+    new_dir = os.path.dirname(os.path.realpath(__file__))
+    print 'new dir %s '% new_dir

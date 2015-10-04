@@ -16,4 +16,6 @@ while True:
     if message[1] == 'CRAWL ALL SPIDERS':
         run.crawl_all()
         print 'DONE CRAWLING'
+    if message[1] == 'PRINT DIRS':
+        run.print_dirs()
     time.sleep(2)
