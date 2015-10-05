@@ -43,8 +43,8 @@ def upsert_season_total(model, scrapy_item, row, s):
 
 
 def insert_new_row(row, s):
-    """Add team if it does not exist yet"""
-    print('\n----------\ninserting new game\n----------\n')
+    """Add item if it does not exist yet"""
+    print('\n----------\ninserting new item\n----------\n')
     try:
         s.add(row)
         s.commit()
@@ -76,8 +76,10 @@ class NFL_Team_Info_2015_Pipeline(object):
             team = NFL_Team_2015(**item)
 
             # Add team if it does not exist yet
-            if session.query(NFL_Team_2015).filter(NFL_Team_2015.name == item['name']).count() > 0:
+            if session.query(NFL_Team_2015).filter(NFL_Team_2015.name == item['name']).count() == 0:
                 insert_new_row(team, session)
+             else:
+                print('team already exists')
 
         # pass item to next pipeline
         return item
@@ -104,7 +106,7 @@ class NFL_Player_2015_Pipeline(object):
             player = NFL_Player_2015(**item)
 
             # Add team if it does not exist yet
-            if session.query(NFL_Player_2015).filter(NFL_Player_2015.name == item['name']).count() > 0:
+            if session.query(NFL_Player_2015).filter(NFL_Player_2015.name == item['name']).count() == 0:
                 insert_new_row(player, session)
             else:
                 print('player already exists')
