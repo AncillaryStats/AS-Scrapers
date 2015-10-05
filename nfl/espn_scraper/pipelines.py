@@ -78,7 +78,7 @@ class NFL_Team_Info_2015_Pipeline(object):
             # Add team if it does not exist yet
             if session.query(NFL_Team_2015).filter(NFL_Team_2015.name == item['name']).count() == 0:
                 insert_new_row(team, session)
-             else:
+            else:
                 print('team already exists')
 
         # pass item to next pipeline
